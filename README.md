@@ -4,7 +4,10 @@ For Unity 2017.4 and later: [UnityRawInput.unitypackage](https://github.com/Elri
 ## Description
 Wrapper over [Windows Raw Input API](https://msdn.microsoft.com/en-us/library/windows/desktop/ms645536(v=vs.85).aspx) to hook for the native input events.
 Allows to receive input events even when the Unity application is in background (not in focus).
+
 Will only work on Windows platform.
+
+Only keyboard input is currently supported. 
 
 ## Usage
 Include package namespace.
