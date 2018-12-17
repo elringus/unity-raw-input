@@ -22,6 +22,8 @@ public class LogRawKeyInput : MonoBehaviour
 
     private void OnValidate ()
     {
+        // Used for testing purposes, won't work in builds.
+        // OnValidate is invoked only in the editor.
         RawKeyInput.InterceptMessages = InterceptMessages;
     }
 
