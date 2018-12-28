@@ -1,6 +1,8 @@
 ## Download package
 For Unity 2017.4 and later: [UnityRawInput.unitypackage](https://github.com/Elringus/UnityRawInput/releases/download/v1.0/UnityRawInput.unitypackage).
 
+Please be aware that you don't need to clone the whole repository in order to use the extension in your project. Either download package from the link above or extract `Assets/UnityRawInput` folder from the repository project – it contains all the required assets; other stuff is just for testing purposes.
+
 ## Description
 Wrapper over [Windows Raw Input API](https://msdn.microsoft.com/en-us/library/windows/desktop/ms645536(v=vs.85).aspx) to hook for the native input events.
 Allows to receive input events even when the Unity application is in background (not in focus).
