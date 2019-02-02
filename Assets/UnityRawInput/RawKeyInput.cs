@@ -78,6 +78,7 @@ namespace UnityRawInput
             }
         }
 
+        [MonoPInvokeCallback(typeof(HookProc))]
         private static int HandleHookProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(hookPtr, code, wParam, lParam);
@@ -91,6 +92,7 @@ namespace UnityRawInput
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(hookPtr, 0, wParam, lParam);
         }
 
+        [MonoPInvokeCallback(typeof(HookProc))]
         private static int HandleLowLevelHookProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(hookPtr, code, wParam, lParam);
