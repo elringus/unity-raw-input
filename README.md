@@ -1,5 +1,5 @@
 ## Download package
-For Unity 2017.4 and later: [UnityRawInput.unitypackage](https://github.com/Elringus/UnityRawInput/releases/download/v1.0/UnityRawInput.unitypackage).
+For Unity 2017.4 and later: [UnityRawInput.unitypackage](https://github.com/Elringus/UnityRawInput/releases/download/v1.1/UnityRawInput.unitypackage).
 
 Please be aware that you don't need to clone the whole repository in order to use the extension in your project. Either download package from the link above or extract `Assets/UnityRawInput` folder from the repository project – it contains all the required assets; other stuff is just for testing purposes.
 
