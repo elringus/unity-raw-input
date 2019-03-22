@@ -17,7 +17,11 @@ namespace UnityRawInput
         /// <summary>
         /// Whether the service is running and input messages are being processed.
         /// </summary>
-        public static bool IsRunning { get { return hookPtr != IntPtr.Zero; } }
+        public static bool IsRunning => hookPtr != IntPtr.Zero;
+        /// <summary>
+        /// Whether any key is currently pressed.
+        /// </summary>
+        public static bool AnyKeyDown => pressedKeys.Count > 0;
         /// <summary>
         /// Whether input messages should be handled when the application is not in focus.
         /// </summary>
@@ -51,6 +55,9 @@ namespace UnityRawInput
             pressedKeys.Clear();
         }
 
+        /// <summary>
+        /// Checks whether provided key is currently pressed.
+        /// </summary>
         public static bool IsKeyDown (RawKey key)
         {
             return pressedKeys.Contains(key);
@@ -78,7 +85,7 @@ namespace UnityRawInput
             }
         }
 
-        [MonoPInvokeCallback(typeof(HookProc))]
+        [AOT.MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleHookProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(hookPtr, code, wParam, lParam);
@@ -92,7 +99,7 @@ namespace UnityRawInput
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(hookPtr, 0, wParam, lParam);
         }
 
-        [MonoPInvokeCallback(typeof(HookProc))]
+        [AOT.MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleLowLevelHookProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(hookPtr, code, wParam, lParam);
