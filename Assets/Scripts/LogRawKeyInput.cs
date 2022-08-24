@@ -11,6 +11,10 @@ public class LogRawKeyInput : MonoBehaviour
         RawKeyInput.Start(WorkInBackground);
         RawKeyInput.OnKeyUp += LogKeyUp;
         RawKeyInput.OnKeyDown += LogKeyDown;
+
+        RawMouseButtons.Start(WorkInBackground);
+        RawMouseButtons.OnMouseUp += LogKeyUp;
+        RawMouseButtons.OnMouseDown += LogKeyDown;
     }
 
     private void OnDisable ()
@@ -18,6 +22,10 @@ public class LogRawKeyInput : MonoBehaviour
         RawKeyInput.Stop();
         RawKeyInput.OnKeyUp -= LogKeyUp;
         RawKeyInput.OnKeyDown -= LogKeyDown;
+
+        RawMouseButtons.Stop();
+        RawMouseButtons.OnMouseUp -= LogKeyUp;
+        RawMouseButtons.OnMouseDown -= LogKeyDown;
     }
 
     private void OnValidate ()
