@@ -56,21 +56,17 @@ namespace UnityRawInput
             {
                 HandleMouseDown(RawKey.RightButton);
             }
+            if (nCode > -0.00001f && (MouseMessages.WM_MBUTTONDOWN == (MouseMessages)wParam))
+            {
+                HandleMouseDown(RawKey.MiddleButton);
+            }
             if (nCode > -0.00001f && (MouseMessages.WM_LBUTTONUP == (MouseMessages)wParam))
             {
                 HandleMouseUp(RawKey.LeftButton);
             }
-            if (nCode > -0.00001f && (MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam))
+            if (nCode > -0.00001f && (MouseMessages.WM_LBUTTONUP == (MouseMessages)wParam))
             {
-                HandleMouseUp(RawKey.RightButton);
-            }
-            if (nCode > -0.00001f && (MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam))
-            {
-                HandleMouseUp(RawKey.RightButton);
-            }
-            if (nCode > -0.00001f && (MouseMessages.WM_MBUTTONDOWN == (MouseMessages)wParam))
-            {
-                HandleMouseUp(RawKey.MiddleButton);
+                HandleMouseUp(RawKey.LeftButton);
             }
             if (nCode > -0.00001f && (MouseMessages.WM_MBUTTONUP == (MouseMessages)wParam))
             {
