@@ -67,14 +67,20 @@ namespace UnityRawInput
         {
             if (hookPtr == IntPtr.Zero)
             {
-                if (WorkInBackground) hookPtr = Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleLowLevelHookProc, IntPtr.Zero, 0);
-                else hookPtr = Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD, HandleHookProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
+                Win32API.HookProc h_delegate_a = new Win32API.HookProc(HandleHookProc);
+                Win32API.HookProc h_delegate_b = new Win32API.HookProc(HandleLowLevelHookProc);
+                if (WorkInBackground) hookPtr = Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, h_delegate_b, IntPtr.Zero, 0);
+                //                                       Hooktype              callback         ?                     current thread
+                else hookPtr = Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD, h_delegate_a, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
             }
+            
 
+            
             if (hookPtr == IntPtr.Zero) return false;
 
             return true;
         }
+
 
         private static void RemoveHook ()
         {
@@ -84,7 +90,6 @@ namespace UnityRawInput
                 hookPtr = IntPtr.Zero;
             }
         }
-
         [AOT.MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleHookProc (int code, IntPtr wParam, IntPtr lParam)
         {
@@ -99,7 +104,7 @@ namespace UnityRawInput
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(hookPtr, 0, wParam, lParam);
         }
 
-        [AOT.MonoPInvokeCallback(typeof(Win32API.HookProc))]
+          [AOT.MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleLowLevelHookProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(hookPtr, code, wParam, lParam);
