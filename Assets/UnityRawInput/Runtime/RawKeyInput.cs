@@ -31,18 +31,18 @@ namespace UnityRawInput
         /// </summary>
         public static bool InterceptMessages { get; set; }
 
+        private static readonly HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
         private static IntPtr hookPtr = IntPtr.Zero;
-        private static HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
 
         /// <summary>
         /// Initializes the service and starts processing input messages.
         /// </summary>
-        /// <param name="workInBackround">Whether input messages should be handled when the application is not in focus.</param>
+        /// <param name="workInBackground">Whether input messages should be handled when the application is not in focus.</param>
         /// <returns>Whether the service started successfully.</returns>
-        public static bool Start (bool workInBackround)
+        public static bool Start (bool workInBackground)
         {
             if (IsRunning) return false;
-            WorkInBackground = workInBackround;
+            WorkInBackground = workInBackground;
             return SetHook();
         }
 
