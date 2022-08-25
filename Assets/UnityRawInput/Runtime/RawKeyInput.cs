@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using AOT;
 
 namespace UnityRawInput
@@ -20,7 +18,7 @@ namespace UnityRawInput
         /// <summary>
         /// Whether the service is running and input messages are being processed.
         /// </summary>
-        public static bool IsRunning => cts != null && !cts.IsCancellationRequested;
+        public static bool IsRunning => hooks.Count > 0;
         /// <summary>
         /// Whether any key is currently pressed.
         /// </summary>
@@ -36,24 +34,18 @@ namespace UnityRawInput
 
         private static readonly HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
         private static readonly List<IntPtr> hooks = new List<IntPtr>();
-        private static SynchronizationContext unityContext;
-        private static CancellationTokenSource cts;
 
         /// <summary>
         /// Initializes the service and starts processing input messages.
         /// </summary>
         /// <param name="workInBackground">Whether input messages should be handled when the application is not in focus.</param>
-        /// <param name="async">Whether to start the service in a background thread.</param>
-        public static void Start (bool workInBackground, bool async)
+        /// <returns>Whether the service started successfully.</returns>
+        public static bool Start (bool workInBackground)
         {
-            if (IsRunning) return;
-            cts = new CancellationTokenSource();
-            unityContext = SynchronizationContext.Current;
+            if (IsRunning) return false;
             WorkInBackground = workInBackground;
-            if (async)
-                try { Task.Run(() => ListenHooksAsync(cts.Token)); }
-                catch (OperationCanceledException) { }
-            else ListenHooks();
+            SetHooks();
+            return hooks.TrueForAll(h => h != IntPtr.Zero);
         }
 
         /// <summary>
@@ -61,7 +53,6 @@ namespace UnityRawInput
         /// </summary>
         public static void Stop ()
         {
-            cts?.Cancel();
             RemoveHooks();
             pressedKeys.Clear();
         }
@@ -74,14 +65,7 @@ namespace UnityRawInput
             return pressedKeys.Contains(key);
         }
 
-        private static async Task ListenHooksAsync (CancellationToken token)
-        {
-            ListenHooks();
-            while (!token.IsCancellationRequested)
-                await Task.Delay(10, token);
-        }
-
-        private static void ListenHooks ()
+        private static void SetHooks ()
         {
             hooks.Add(SetKeyboardHook());
             hooks.Add(SetMouseHook());
@@ -126,11 +110,11 @@ namespace UnityRawInput
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
-            var kbd = KeyboardArgs.FromPtr(lParam);
-            var keyState = (RawKeyState)wParam;
-            var key = (RawKey)kbd.Code;
+            var args = KeyboardArgs.FromPtr(lParam);
+            var state = (RawKeyState)wParam;
+            var key = (RawKey)args.Code;
 
-            if (keyState == RawKeyState.KeyDown || keyState == RawKeyState.SysKeyDown) HandleKeyDown(key);
+            if (state == RawKeyState.KeyDown || state == RawKeyState.SysKeyDown) HandleKeyDown(key);
             else HandleKeyUp(key);
 
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
@@ -154,15 +138,13 @@ namespace UnityRawInput
         private static void HandleKeyDown (RawKey key)
         {
             var added = pressedKeys.Add(key);
-            if (added) unityContext.Send(InvokeOnUnityThread, key);
-            void InvokeOnUnityThread (object obj) => OnKeyDown?.Invoke((RawKey)obj);
+            if (added) OnKeyDown?.Invoke(key);
         }
 
         private static void HandleKeyUp (RawKey key)
         {
             pressedKeys.Remove(key);
-            unityContext.Send(InvokeOnUnityThread, key);
-            void InvokeOnUnityThread (object obj) => OnKeyUp?.Invoke((RawKey)obj);
+            OnKeyUp?.Invoke(key);
         }
     }
 }
