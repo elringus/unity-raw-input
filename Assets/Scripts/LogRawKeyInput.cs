@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityRawInput;
 
 public class LogRawKeyInput : MonoBehaviour
@@ -13,8 +13,8 @@ public class LogRawKeyInput : MonoBehaviour
         RawKeyInput.OnKeyDown += LogKeyDown;
 
         RawMouseButtons.Start(WorkInBackground);
-        RawMouseButtons.OnMouseUp += LogKeyUp;
-        RawMouseButtons.OnMouseDown += LogKeyDown;
+        RawMouseButtons.OnMouseUp += LogMouseUp;
+        RawMouseButtons.OnMouseDown += LogMouseDown;
     }
 
     private void OnDisable ()
@@ -24,8 +24,8 @@ public class LogRawKeyInput : MonoBehaviour
         RawKeyInput.OnKeyDown -= LogKeyDown;
 
         RawMouseButtons.Stop();
-        RawMouseButtons.OnMouseUp -= LogKeyUp;
-        RawMouseButtons.OnMouseDown -= LogKeyDown;
+        RawMouseButtons.OnMouseUp -= LogMouseUp;
+        RawMouseButtons.OnMouseDown -= LogMouseDown;
     }
 
     private void OnValidate ()
@@ -35,13 +35,22 @@ public class LogRawKeyInput : MonoBehaviour
         RawKeyInput.InterceptMessages = InterceptMessages;
     }
 
-    private void LogKeyUp (RawKey key)
+    private void LogKeyUp(RawKey key)
     {
         Debug.Log("Key Up: " + key);
     }
 
-    private void LogKeyDown (RawKey key)
+    private void LogKeyDown(RawKey key)
     {
         Debug.Log("Key Down: " + key);
+    }
+    private void LogMouseUp(RawClicks click)
+    {
+        Debug.Log("Key Up: " + click);
+    }
+
+    private void LogMouseDown(RawClicks click)
+    {
+        Debug.Log("Key Down: " + click);
     }
 }
