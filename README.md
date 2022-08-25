@@ -12,7 +12,7 @@ Download and import the package: [UnityRawInput.unitypackage](https://github.com
 
 ## Usage
 
-Enable `Run In Background` in project's player settings; if not enabled, expect severe mouse slowdown when the application is not in focus (https://github.com/Elringus/UnityRawInput/issues/19#issuecomment-1227462101). 
+Enable `Run In Background` in project's player settings; if not enabled, expect severe mouse slowdown when the application is not in focus https://github.com/Elringus/UnityRawInput/issues/19#issuecomment-1227462101. 
 
 ![](https://i.gyazo.com/9737f66dafa9c705601521b82f40fc5a.png)
 
