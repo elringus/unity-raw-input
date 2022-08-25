@@ -55,3 +55,5 @@ private void OnDisable ()
 ```
 
 Find usage example in the project: https://github.com/Elringus/UnityRawInput/blob/master/Assets/Scripts/LogRawKeyInput.cs.
+
+List of the raw keys with descriptions: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes.
