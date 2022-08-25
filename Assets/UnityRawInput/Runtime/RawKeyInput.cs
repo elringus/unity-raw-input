@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -160,6 +160,9 @@ namespace UnityRawInput
 
         private static void HandleKeyUp (RawKey key)
         {
+            if (!pressedKeys.Contains(key))
+                HandleKeyDown(key);
+
             pressedKeys.Remove(key);
             unityContext.Send(InvokeOnUnityThread, key);
             void InvokeOnUnityThread (object obj) => OnKeyUp?.Invoke((RawKey)obj);
