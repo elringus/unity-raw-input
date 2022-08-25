@@ -4,11 +4,12 @@ using UnityRawInput;
 public class LogRawKeyInput : MonoBehaviour
 {
     public bool WorkInBackground;
+    public bool Async;
     public bool InterceptMessages;
 
     private void OnEnable ()
     {
-        RawKeyInput.Start(WorkInBackground);
+        RawKeyInput.Start(WorkInBackground, Async);
         RawKeyInput.OnKeyUp += LogKeyUp;
         RawKeyInput.OnKeyDown += LogKeyDown;
     }
