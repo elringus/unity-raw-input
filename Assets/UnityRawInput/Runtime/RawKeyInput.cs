@@ -46,6 +46,7 @@ namespace UnityRawInput
         /// <param name="async">Whether to start the service in a background thread.</param>
         public static void Start (bool workInBackground, bool async)
         {
+            if (!InterceptMessages) return;
             if (IsRunning) return;
             cts = new CancellationTokenSource();
             unityContext = SynchronizationContext.Current;
@@ -118,7 +119,7 @@ namespace UnityRawInput
             if (isKeyDown) HandleKeyDown(key);
             else HandleKeyUp(key);
 
-            return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
+            return  Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
@@ -133,13 +134,13 @@ namespace UnityRawInput
             if (keyState == RawKeyState.KeyDown || keyState == RawKeyState.SysKeyDown) HandleKeyDown(key);
             else HandleKeyUp(key);
 
-            return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
+            return  Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleMouseProc (int code, IntPtr wParam, IntPtr lParam)
         {
-           if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
             var state = (RawMouseState)wParam;
             if (state == RawMouseState.LeftButtonDown) HandleKeyDown(RawKey.LeftButton);
             else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
