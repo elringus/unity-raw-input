@@ -4,7 +4,7 @@ using AOT;
 
 namespace UnityRawInput
 {
-    public static class RawKeyInput
+    public static class RawInput
     {
         /// <summary>
         /// Event invoked when user presses a key.

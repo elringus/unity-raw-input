@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityRawInput;
 
-public class LogRawKeyInput : MonoBehaviour
+public class LogRawInput : MonoBehaviour
 {
     public bool WorkInBackground;
     public bool InterceptMessages;
@@ -9,25 +9,25 @@ public class LogRawKeyInput : MonoBehaviour
 
     private void OnEnable ()
     {
-        RawKeyInput.Start(WorkInBackground);
-        RawKeyInput.OnKeyUp += LogKeyUp;
-        RawKeyInput.OnKeyDown += LogKeyDown;
-        RawKeyInput.OnKeyDown += DisableIntercept;
+        RawInput.Start(WorkInBackground);
+        RawInput.OnKeyUp += LogKeyUp;
+        RawInput.OnKeyDown += LogKeyDown;
+        RawInput.OnKeyDown += DisableIntercept;
     }
 
     private void OnDisable ()
     {
-        RawKeyInput.Stop();
-        RawKeyInput.OnKeyUp -= LogKeyUp;
-        RawKeyInput.OnKeyDown -= LogKeyDown;
-        RawKeyInput.OnKeyDown -= DisableIntercept;
+        RawInput.Stop();
+        RawInput.OnKeyUp -= LogKeyUp;
+        RawInput.OnKeyDown -= LogKeyDown;
+        RawInput.OnKeyDown -= DisableIntercept;
     }
 
     private void OnValidate ()
     {
         // Used for testing purposes, won't work in build.
         // OnValidate is invoked only in the editor.
-        RawKeyInput.InterceptMessages = InterceptMessages;
+        RawInput.InterceptMessages = InterceptMessages;
     }
 
     private void LogKeyUp (RawKey key)
@@ -42,7 +42,7 @@ public class LogRawKeyInput : MonoBehaviour
 
     private void DisableIntercept (RawKey key)
     {
-        if (RawKeyInput.InterceptMessages && key == DisableInterceptKey)
-            RawKeyInput.InterceptMessages = InterceptMessages = false;
+        if (RawInput.InterceptMessages && key == DisableInterceptKey)
+            RawInput.InterceptMessages = InterceptMessages = false;
     }
 }

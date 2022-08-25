@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 394699777}
   - component: {fileID: 394699778}
   m_Layer: 0
-  m_Name: LogRawKeyInput
+  m_Name: LogRawInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -165,5 +165,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WorkInBackground: 1
-  Async: 0
   InterceptMessages: 0
+  DisableInterceptKey: 27
