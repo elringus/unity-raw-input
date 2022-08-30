@@ -128,9 +128,11 @@ namespace UnityRawInput
             if (state == RawMouseState.LeftButtonDown) HandleKeyDown(RawKey.LeftButton);
             else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
             else if (state == RawMouseState.RightButtonDown) HandleKeyDown(RawKey.RightButton);
+            else if (state == RawMouseState.ExtraButtonDown) HandleKeyDown(RawKey.ExtraButton1);
             else if (state == RawMouseState.LeftButtonUp) HandleKeyUp(RawKey.LeftButton);
             else if (state == RawMouseState.MiddleButtonUp) HandleKeyUp(RawKey.MiddleButton);
             else if (state == RawMouseState.RightButtonUp) HandleKeyUp(RawKey.RightButton);
+            else if (state == RawMouseState.ExtraButtonUp) HandleKeyUp(RawKey.ExtraButton1);
             else return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
         }
