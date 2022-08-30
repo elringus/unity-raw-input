@@ -199,4 +199,6 @@
         PA1 = 0xFD,
         OEMClear = 0xFE
     }
+
+    // https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 }
