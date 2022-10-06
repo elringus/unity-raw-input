@@ -113,7 +113,7 @@ namespace UnityRawInput
 
             var args = (KeyboardArgs)lParam;
             var state = (RawKeyState)wParam;
-            var key = (RawKey)args.Code;
+            var key = (RawKey)args;
 
             if (state == RawKeyState.KeyDown || state == RawKeyState.SysKeyDown) HandleKeyDown(key);
             else HandleKeyUp(key);
