@@ -47,22 +47,10 @@ public class LogRawInput : MonoBehaviour
     }
 
     private GUIStyle style;
+    private Rect? rect;
     private void OnGUI()
     {
-        // Ensure there's a camera to render to, create dummy camera otherwise
-        if (Camera.main == null)
-        {
-            var obj = new GameObject("Camera") { hideFlags = HideFlags.HideAndDontSave, tag = "MainCamera" };
-            var cam = obj.AddComponent<Camera>();
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = Color.black;
-        }
-
+        GUI.Box(rect ?? (Rect)(rect = new Rect(Vector2.zero, new Vector2(Screen.width, Screen.height))), GUIContent.none);
         GUILayout.Label(RawInput.ToString(), style ?? (style = new GUIStyle(GUI.skin.label) { fontSize = 32 }), GUILayout.Width(Screen.width), GUILayout.Height(Screen.height));
-    }
-
-    private void DrawBox(int row)
-    {
-        GUI.Box(new Rect(GUIUtility.ScreenToGUIPoint(Vector2.zero) + (Vector2.up * 50f * row), new Vector2(500f, 50f)), GUIContent.none);
     }
 }
