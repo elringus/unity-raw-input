@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace UnityRawInput
@@ -12,15 +13,14 @@ namespace UnityRawInput
         public uint Time;
         public UIntPtr ExtraInfo;
 
-        public static KeyboardArgs FromPtr (IntPtr ptr)
-        {
-            return (KeyboardArgs)Marshal.PtrToStructure(ptr, typeof(KeyboardArgs));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator KeyboardArgs(IntPtr ptr) => (KeyboardArgs)Marshal.PtrToStructure(ptr, typeof(KeyboardArgs));
     }
 
     [Flags]
     public enum KeyboardFlags : uint
     {
+        None = 0x00,
         Extended = 0x01,
         Injected = 0x10,
         AltDown = 0x20,

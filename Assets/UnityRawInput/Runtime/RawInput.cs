@@ -41,7 +41,7 @@ namespace UnityRawInput
         /// </summary>
         /// <param name="workInBackground">Whether input messages should be handled when the application is not in focus.</param>
         /// <returns>Whether the service started successfully.</returns>
-        public static bool Start (bool workInBackground)
+        public static bool Start(bool workInBackground)
         {
             if (IsRunning) return false;
             WorkInBackground = workInBackground;
@@ -52,7 +52,7 @@ namespace UnityRawInput
         /// <summary>
         /// Terminates the service and stops processing input messages.
         /// </summary>
-        public static void Stop ()
+        public static void Stop()
         {
             RemoveHooks();
             pressedKeys.Clear();
@@ -61,18 +61,18 @@ namespace UnityRawInput
         /// <summary>
         /// Checks whether provided key is currently pressed.
         /// </summary>
-        public static bool IsKeyDown (RawKey key)
+        public static bool IsKeyDown(RawKey key)
         {
             return pressedKeys.Contains(key);
         }
 
-        private static void SetHooks ()
+        private static void SetHooks()
         {
             hooks.Add(SetKeyboardHook());
             hooks.Add(SetMouseHook());
         }
 
-        private static void RemoveHooks ()
+        private static void RemoveHooks()
         {
             foreach (var pointer in hooks)
                 if (pointer != IntPtr.Zero)
@@ -80,20 +80,20 @@ namespace UnityRawInput
             hooks.Clear();
         }
 
-        private static IntPtr SetKeyboardHook ()
+        private static IntPtr SetKeyboardHook()
         {
             if (WorkInBackground) return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleLowLevelKeyboardProc, IntPtr.Zero, 0);
             return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD, HandleKeyboardProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
         }
 
-        private static IntPtr SetMouseHook ()
+        private static IntPtr SetMouseHook()
         {
             if (WorkInBackground) return Win32API.SetWindowsHookEx(HookType.WH_MOUSE_LL, HandleMouseProc, IntPtr.Zero, 0);
             return Win32API.SetWindowsHookEx(HookType.WH_MOUSE, HandleMouseProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleKeyboardProc(int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
@@ -107,11 +107,11 @@ namespace UnityRawInput
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleLowLevelKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleLowLevelKeyboardProc(int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
-            var args = KeyboardArgs.FromPtr(lParam);
+            var args = (KeyboardArgs)lParam;
             var state = (RawKeyState)wParam;
             var key = (RawKey)args.Code;
 
@@ -122,29 +122,33 @@ namespace UnityRawInput
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleMouseProc (int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleMouseProc(int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
-            var state = (RawMouseState)wParam;
-            if (state == RawMouseState.LeftButtonDown) HandleKeyDown(RawKey.LeftButton);
-            else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
-            else if (state == RawMouseState.RightButtonDown) HandleKeyDown(RawKey.RightButton);
-            else if (state == RawMouseState.ExtraButtonDown) HandleKeyDown(RawKey.ExtraButton1);
-            else if (state == RawMouseState.LeftButtonUp) HandleKeyUp(RawKey.LeftButton);
-            else if (state == RawMouseState.MiddleButtonUp) HandleKeyUp(RawKey.MiddleButton);
-            else if (state == RawMouseState.RightButtonUp) HandleKeyUp(RawKey.RightButton);
-            else if (state == RawMouseState.ExtraButtonUp) HandleKeyUp(RawKey.ExtraButton1);
-            else return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+
+            switch ((RawMouseState)wParam)
+            {
+                case RawMouseState.LeftButtonDown: HandleKeyDown(RawKey.LeftButton); break;
+                case RawMouseState.MiddleButtonDown: HandleKeyDown(RawKey.MiddleButton); break;
+                case RawMouseState.RightButtonDown: HandleKeyDown(RawKey.RightButton); break;
+                case RawMouseState.ExtraButtonDown: HandleKeyDown(RawKey.XButton1); break;
+                case RawMouseState.LeftButtonUp: HandleKeyUp(RawKey.LeftButton); break;
+                case RawMouseState.MiddleButtonUp: HandleKeyUp(RawKey.MiddleButton); break;
+                case RawMouseState.RightButtonUp: HandleKeyUp(RawKey.RightButton); break;
+                case RawMouseState.ExtraButtonUp: HandleKeyUp(RawKey.XButton1); break;
+                default: return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            }
+
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
         }
 
-        private static void HandleKeyDown (RawKey key)
+        private static void HandleKeyDown(RawKey key)
         {
             var added = pressedKeys.Add(key);
             if (added) OnKeyDown?.Invoke(key);
         }
 
-        private static void HandleKeyUp (RawKey key)
+        private static void HandleKeyUp(RawKey key)
         {
             pressedKeys.Remove(key);
             OnKeyUp?.Invoke(key);
