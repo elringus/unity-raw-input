@@ -33,6 +33,7 @@ namespace UnityRawInput
         public static bool InterceptMessages { get; set; }
 
         private static readonly HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
+        public static new string ToString() => String.Join(" + ", pressedKeys);
         private static readonly List<IntPtr> hooks = new List<IntPtr>();
 
         /// <summary>
