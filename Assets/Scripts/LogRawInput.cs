@@ -45,12 +45,18 @@ public class LogRawInput : MonoBehaviour
         if (RawInput.InterceptMessages && key == DisableInterceptKey)
             RawInput.InterceptMessages = InterceptMessages = false;
     }
+}
 
-    private GUIStyle style;
-    private Rect? rect;
-    private void OnGUI()
+#if UNITY_EDITOR
+[UnityEditor.CustomEditor(typeof(LogRawInput))]
+public class LogRawInputEditor : UnityEditor.Editor
+{
+    public override bool RequiresConstantRepaint() => true;
+    public override void OnInspectorGUI()
     {
-        GUI.Box(rect ?? (Rect)(rect = new Rect(Vector2.zero, new Vector2(Screen.width, Screen.height))), GUIContent.none);
-        GUILayout.Label(RawInput.ToString(), style ?? (style = new GUIStyle(GUI.skin.label) { fontSize = 32 }), GUILayout.Width(Screen.width), GUILayout.Height(Screen.height));
+        if (RawInput.IsRunning)
+            UnityEditor.EditorGUILayout.LabelField(RawInput.ToString());
+        base.OnInspectorGUI();
     }
 }
+#endif
