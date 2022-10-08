@@ -26,50 +26,13 @@ namespace UnityRawInput
         public static bool operator !=(RawKey k1, RawKey k2) => !(k1 == k2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator RawKey(string s)
-        {
-            var key = new RawKey();
-            var vk = Regex.Match(s, @"vk[\da-f]{2}", RegexOptions.IgnoreCase).ToString();
-            var sc = Regex.Match(s, @"sc[\da-f]{3}", RegexOptions.IgnoreCase).ToString();
-            if (string.IsNullOrEmpty(vk) && string.IsNullOrEmpty(sc)) return Parse(s);
-            if (!string.IsNullOrEmpty(vk))
-            {
-                try
-                {
-                    key.VK = byte.Parse(vk.Replace("vk", ""), NumberStyles.HexNumber);
-                    if (string.IsNullOrEmpty(sc)) return Parse(key.VK);
-                }
-                catch (FormatException)
-                {
-                    UnityEngine.Debug.LogWarning($"Unable to parse '{vk}'");
-                }
-            }
-            if (!string.IsNullOrEmpty(sc))
-            {
-                try
-                {
-                    key.SC = ushort.Parse(sc.Replace("sc", ""), NumberStyles.HexNumber);
-                    if (string.IsNullOrEmpty(vk)) return Parse(key.SC);
-                }
-                catch (FormatException)
-                {
-                    UnityEngine.Debug.LogWarning($"Unable to parse '{sc}'");
-                }
-            }
-            return key;
-        }
+        public static explicit operator RawKey(string s) => Parse(s);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator RawKey(KeyboardArgs k)
-        {
-            return new RawKey((byte)k.Code, (ushort)k.ScanCode);
-        }
+        public static explicit operator RawKey(KeyboardArgs k) => new RawKey((byte)k.Code, (ushort)k.ScanCode);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator RawKey(IntPtr i)
-        {
-            return Parse((byte)i);
-        }
+        public static explicit operator RawKey(IntPtr i) => Parse((byte)i);
 
         public static RawKey Parse(string parse)
         {
@@ -615,8 +578,15 @@ namespace UnityRawInput
                     return OEMENLW;
                 case "oemcopy":
                     return OEMCopy;
+                default:
+                    var vkParse = byte.TryParse(Regex.Match(parse, @"vk[\da-f]{2}", RegexOptions.IgnoreCase)
+                        .ToString().Replace("vk", ""), NumberStyles.HexNumber,
+                        CultureInfo.InvariantCulture, out var vk);
+                    var scParse = ushort.TryParse(Regex.Match(parse, @"sc[\da-f]{3}", RegexOptions.IgnoreCase)
+                        .ToString().Replace("sc", ""), NumberStyles.HexNumber,
+                        CultureInfo.InvariantCulture, out var sc);
+                    return vkParse ^ scParse ? vkParse ? Parse(vk) : Parse(sc) : new RawKey(vk, sc);
             }
-            return new RawKey();
         }
 
         public static RawKey Parse(byte parse)
