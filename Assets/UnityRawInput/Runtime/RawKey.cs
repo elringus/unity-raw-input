@@ -11,30 +11,30 @@ namespace UnityRawInput
     /// </summary>
     public struct RawKey : IEquatable<RawKey>
     {
-        public RawKey(byte vk, ushort sc) { VK = vk; SC = sc; }
+        public RawKey (byte vk, ushort sc) { VK = vk; SC = sc; }
         public byte VK { get; private set; }
         public ushort SC { get; private set; }
 
-        public override string ToString() => AllKeys.TryGetValue(this, out string name) ? name
+        public override string ToString () => AllKeys.TryGetValue(this, out string name) ? name
             : SC < 0x100 && AllKeys.TryGetValue(new RawKey(this.VK, (ushort)(this.SC + 0x100)), out name) ? name // TODO: Figure out why Unity doesn't want to get upper byte of scancode sometimes
             : $"vk{VK:X2}sc{SC:X3}";
 
-        public override bool Equals(object obj) => obj != null && GetType() == obj.GetType() && Equals((RawKey)obj);
-        public bool Equals(RawKey other) => VK == other.VK && SC == other.SC;
-        public override int GetHashCode() => Tuple.Create(VK, SC).GetHashCode();
-        public static bool operator ==(RawKey k1, RawKey k2) => k1.VK == k2.VK && k1.SC == k2.SC;
-        public static bool operator !=(RawKey k1, RawKey k2) => !(k1 == k2);
+        public override bool Equals (object obj) => obj != null && GetType() == obj.GetType() && Equals((RawKey)obj);
+        public bool Equals (RawKey other) => VK == other.VK && SC == other.SC;
+        public override int GetHashCode () => Tuple.Create(VK, SC).GetHashCode();
+        public static bool operator == (RawKey k1, RawKey k2) => k1.VK == k2.VK && k1.SC == k2.SC;
+        public static bool operator != (RawKey k1, RawKey k2) => !(k1 == k2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator RawKey(string s) => Parse(s);
+        public static explicit operator RawKey (string s) => Parse(s);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator RawKey(KeyboardArgs k) => new RawKey((byte)k.Code, (ushort)k.ScanCode);
+        public static explicit operator RawKey (KeyboardArgs k) => new RawKey((byte)k.Code, (ushort)k.ScanCode);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator RawKey(IntPtr i) => Parse((byte)i);
+        public static explicit operator RawKey (IntPtr i) => Parse((byte)i);
 
-        public static RawKey Parse(string parse)
+        public static RawKey Parse (string parse)
         {
             switch (parse.ToLowerInvariant())
             {
@@ -589,7 +589,7 @@ namespace UnityRawInput
             }
         }
 
-        public static RawKey Parse(byte parse)
+        public static RawKey Parse (byte parse)
         {
             switch (parse)
             {
@@ -796,7 +796,7 @@ namespace UnityRawInput
             }
         }
 
-        public static RawKey Parse(ushort parse)
+        public static RawKey Parse (ushort parse)
         {
             switch (parse)
             {

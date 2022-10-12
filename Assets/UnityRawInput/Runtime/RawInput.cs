@@ -33,7 +33,7 @@ namespace UnityRawInput
         public static bool InterceptMessages { get; set; }
 
         private static readonly HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
-        public static new string ToString() => String.Join(" + ", pressedKeys);
+        public static new string ToString () => String.Join(" + ", pressedKeys);
         private static readonly List<IntPtr> hooks = new List<IntPtr>();
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace UnityRawInput
         /// </summary>
         /// <param name="workInBackground">Whether input messages should be handled when the application is not in focus.</param>
         /// <returns>Whether the service started successfully.</returns>
-        public static bool Start(bool workInBackground)
+        public static bool Start (bool workInBackground)
         {
             if (IsRunning) return false;
             WorkInBackground = workInBackground;
@@ -52,7 +52,7 @@ namespace UnityRawInput
         /// <summary>
         /// Terminates the service and stops processing input messages.
         /// </summary>
-        public static void Stop()
+        public static void Stop ()
         {
             RemoveHooks();
             pressedKeys.Clear();
@@ -61,18 +61,18 @@ namespace UnityRawInput
         /// <summary>
         /// Checks whether provided key is currently pressed.
         /// </summary>
-        public static bool IsKeyDown(RawKey key)
+        public static bool IsKeyDown (RawKey key)
         {
             return pressedKeys.Contains(key);
         }
 
-        private static void SetHooks()
+        private static void SetHooks ()
         {
             hooks.Add(SetKeyboardHook());
             hooks.Add(SetMouseHook());
         }
 
-        private static void RemoveHooks()
+        private static void RemoveHooks ()
         {
             foreach (var pointer in hooks)
                 if (pointer != IntPtr.Zero)
@@ -80,20 +80,20 @@ namespace UnityRawInput
             hooks.Clear();
         }
 
-        private static IntPtr SetKeyboardHook()
+        private static IntPtr SetKeyboardHook ()
         {
             if (WorkInBackground) return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleLowLevelKeyboardProc, IntPtr.Zero, 0);
             return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD, HandleKeyboardProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
         }
 
-        private static IntPtr SetMouseHook()
+        private static IntPtr SetMouseHook ()
         {
             if (WorkInBackground) return Win32API.SetWindowsHookEx(HookType.WH_MOUSE_LL, HandleMouseProc, IntPtr.Zero, 0);
             return Win32API.SetWindowsHookEx(HookType.WH_MOUSE, HandleMouseProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleKeyboardProc(int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
@@ -107,7 +107,7 @@ namespace UnityRawInput
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleLowLevelKeyboardProc(int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleLowLevelKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
@@ -122,7 +122,7 @@ namespace UnityRawInput
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleMouseProc(int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleMouseProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
@@ -142,13 +142,13 @@ namespace UnityRawInput
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
         }
 
-        private static void HandleKeyDown(RawKey key)
+        private static void HandleKeyDown (RawKey key)
         {
             var added = pressedKeys.Add(key);
             if (added) OnKeyDown?.Invoke(key);
         }
 
-        private static void HandleKeyUp(RawKey key)
+        private static void HandleKeyUp (RawKey key)
         {
             pressedKeys.Remove(key);
             OnKeyUp?.Invoke(key);
