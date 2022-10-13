@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace UnityRawInput
@@ -12,10 +13,8 @@ namespace UnityRawInput
         public uint Time;
         public UIntPtr ExtraInfo;
 
-        public static KeyboardArgs FromPtr (IntPtr ptr)
-        {
-            return (KeyboardArgs)Marshal.PtrToStructure(ptr, typeof(KeyboardArgs));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator KeyboardArgs (IntPtr ptr) => (KeyboardArgs)Marshal.PtrToStructure(ptr, typeof(KeyboardArgs));
     }
 
     [Flags]
