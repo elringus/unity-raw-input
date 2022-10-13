@@ -46,3 +46,17 @@ public class LogRawInput : MonoBehaviour
             RawInput.InterceptMessages = InterceptMessages = false;
     }
 }
+
+#if UNITY_EDITOR
+[UnityEditor.CustomEditor(typeof(LogRawInput))]
+public class LogRawInputEditor : UnityEditor.Editor
+{
+    public override bool RequiresConstantRepaint () => true;
+    public override void OnInspectorGUI ()
+    {
+        if (RawInput.IsRunning)
+            UnityEditor.EditorGUILayout.LabelField(RawInput.ToString());
+        base.OnInspectorGUI();
+    }
+}
+#endif
