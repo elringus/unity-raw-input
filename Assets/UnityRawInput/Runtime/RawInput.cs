@@ -31,6 +31,10 @@ namespace UnityRawInput
         /// Whether handled input messages should not be propagated further.
         /// </summary>
         public static bool InterceptMessages { get; set; }
+        /// <summary>
+        /// Currently pressed keys.
+        /// </summary>
+        public static IReadOnlyCollection<RawKey> PressedKeys => pressedKeys;
 
         private static readonly HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
         private static readonly List<IntPtr> hooks = new List<IntPtr>();
@@ -110,7 +114,7 @@ namespace UnityRawInput
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
-            var args = KeyboardArgs.FromPtr(lParam);
+            var args = (KeyboardArgs)lParam;
             var state = (RawKeyState)wParam;
             var key = (RawKey)args.Code;
 

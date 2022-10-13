@@ -7,3 +7,6 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
 tab_width = 4
+
+[*.cs]
+csharp_space_between_method_declaration_name_and_open_parenthesis = true
