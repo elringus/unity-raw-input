@@ -1,5 +1,5 @@
 {
-    "name": "UnityRawInput",
+    "name": "Elringus.UnityRawInput.Runtime",
     "references": [],
     "includePlatforms": [
         "Editor",
