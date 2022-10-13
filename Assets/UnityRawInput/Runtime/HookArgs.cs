@@ -14,7 +14,8 @@ namespace UnityRawInput
         public UIntPtr ExtraInfo;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator KeyboardArgs (IntPtr ptr) => Marshal.PtrToStructure<KeyboardArgs>(ptr);
+        public static explicit operator KeyboardArgs (IntPtr ptr)
+            => Marshal.PtrToStructure<KeyboardArgs>(ptr);
     }
 
     [Flags]

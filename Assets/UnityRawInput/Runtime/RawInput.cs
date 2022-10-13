@@ -31,9 +31,12 @@ namespace UnityRawInput
         /// Whether handled input messages should not be propagated further.
         /// </summary>
         public static bool InterceptMessages { get; set; }
+        /// <summary>
+        /// Currently pressed keys.
+        /// </summary>
+        public static IReadOnlyCollection<RawKey> PressedKeys => pressedKeys;
 
         private static readonly HashSet<RawKey> pressedKeys = new HashSet<RawKey>();
-        public static new string ToString () => String.Join(" + ", pressedKeys);
         private static readonly List<IntPtr> hooks = new List<IntPtr>();
 
         /// <summary>
@@ -125,18 +128,16 @@ namespace UnityRawInput
         private static int HandleMouseProc (int code, IntPtr wParam, IntPtr lParam)
         {
             if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
-            switch ((RawMouseState)wParam)
-            {
-                case RawMouseState.LeftButtonDown: HandleKeyDown(RawKey.LeftButton); break;
-                case RawMouseState.MiddleButtonDown: HandleKeyDown(RawKey.MiddleButton); break;
-                case RawMouseState.RightButtonDown: HandleKeyDown(RawKey.RightButton); break;
-                case RawMouseState.ExtraButtonDown: HandleKeyDown(RawKey.ExtraButton1); break;
-                case RawMouseState.LeftButtonUp: HandleKeyUp(RawKey.LeftButton); break;
-                case RawMouseState.MiddleButtonUp: HandleKeyUp(RawKey.MiddleButton); break;
-                case RawMouseState.RightButtonUp: HandleKeyUp(RawKey.RightButton); break;
-                case RawMouseState.ExtraButtonUp: HandleKeyUp(RawKey.ExtraButton1); break;
-                default: return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
-            }
+            var state = (RawMouseState)wParam;
+            if (state == RawMouseState.LeftButtonDown) HandleKeyDown(RawKey.LeftButton);
+            else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
+            else if (state == RawMouseState.RightButtonDown) HandleKeyDown(RawKey.RightButton);
+            else if (state == RawMouseState.ExtraButtonDown) HandleKeyDown(RawKey.ExtraButton1);
+            else if (state == RawMouseState.LeftButtonUp) HandleKeyUp(RawKey.LeftButton);
+            else if (state == RawMouseState.MiddleButtonUp) HandleKeyUp(RawKey.MiddleButton);
+            else if (state == RawMouseState.RightButtonUp) HandleKeyUp(RawKey.RightButton);
+            else if (state == RawMouseState.ExtraButtonUp) HandleKeyUp(RawKey.ExtraButton1);
+            else return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
         }
 
