@@ -63,9 +63,9 @@ namespace UnityRawInput
             }
         }
         /// <summary>
-        /// Returns either "special key" format or virtual key byte, depending on if running low-level
+        /// Returns "special key" format
         /// </summary>
-        public string RawString () => RawInput.WorkInBackground ? $"vk{VK:X2}sc{SC:X3}" : $"0x{VK:X2}";
+        public string RawString () => $"vk{VK:X2}sc{SC:X3}";
 
 
         /// <summary>
