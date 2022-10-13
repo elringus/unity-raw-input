@@ -1,211 +1,219 @@
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace UnityRawInput
 {
     public partial struct RawKey
     {
-        public static IReadOnlyDictionary<byte, RawKey> MatchVirtualKey { get; } = new Dictionary<byte, RawKey>()
+        /// <summary>
+        /// Create a RawKey from a byte (Virtual Key)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static RawKey FromVirtualKey (byte value)
         {
-            {0x01, LeftButton},
-            {0x02, RightButton},
-            {0x03, Cancel},
-            {0x04, MiddleButton},
-            {0x05, ExtraButton1},
-            {0x06, ExtraButton2},
-            {0x08, Back},
-            {0x09, Tab},
-            {0x0C, Clear},
-            {0x0D, Return},
-            {0x10, Shift},
-            {0x11, Control},
-            {0x12, Menu},
-            {0x13, Pause},
-            {0x14, CapsLock},
-            {0x15, Kana},
-            {0x17, Junja},
-            {0x18, Final},
-            {0x19, Hanja},
-            {0x1B, Escape},
-            {0x1C, Convert},
-            {0x1D, NonConvert},
-            {0x1E, Accept},
-            {0x1F, ModeChange},
-            {0x20, Space},
-            {0x21, Prior},
-            {0x22, Next},
-            {0x23, End},
-            {0x24, Home},
-            {0x25, Left},
-            {0x26, Up},
-            {0x27, Right},
-            {0x28, Down},
-            {0x29, Select},
-            {0x2A, Print},
-            {0x2B, Execute},
-            {0x2C, Snapshot},
-            {0x2D, Insert},
-            {0x2E, Delete},
-            {0x2F, Help},
-            {0x30, N0},
-            {0x31, N1},
-            {0x32, N2},
-            {0x33, N3},
-            {0x34, N4},
-            {0x35, N5},
-            {0x36, N6},
-            {0x37, N7},
-            {0x38, N8},
-            {0x39, N9},
-            {0x41, A},
-            {0x42, B},
-            {0x43, C},
-            {0x44, D},
-            {0x45, E},
-            {0x46, F},
-            {0x47, G},
-            {0x48, H},
-            {0x49, I},
-            {0x4A, J},
-            {0x4B, K},
-            {0x4C, L},
-            {0x4D, M},
-            {0x4E, N},
-            {0x4F, O},
-            {0x50, P},
-            {0x51, Q},
-            {0x52, R},
-            {0x53, S},
-            {0x54, T},
-            {0x55, U},
-            {0x56, V},
-            {0x57, W},
-            {0x58, X},
-            {0x59, Y},
-            {0x5A, Z},
-            {0x5B, LeftWindows},
-            {0x5C, RightWindows},
-            {0x5D, Application},
-            {0x5F, Sleep},
-            {0x60, Numpad0},
-            {0x61, Numpad1},
-            {0x62, Numpad2},
-            {0x63, Numpad3},
-            {0x64, Numpad4},
-            {0x65, Numpad5},
-            {0x66, Numpad6},
-            {0x67, Numpad7},
-            {0x68, Numpad8},
-            {0x69, Numpad9},
-            {0x6A, Multiply},
-            {0x6B, Add},
-            {0x6C, Separator},
-            {0x6D, Subtract},
-            {0x6E, Decimal},
-            {0x6F, Divide},
-            {0x70, F1},
-            {0x71, F2},
-            {0x72, F3},
-            {0x73, F4},
-            {0x74, F5},
-            {0x75, F6},
-            {0x76, F7},
-            {0x77, F8},
-            {0x78, F9},
-            {0x79, F10},
-            {0x7A, F11},
-            {0x7B, F12},
-            {0x7C, F13},
-            {0x7D, F14},
-            {0x7E, F15},
-            {0x7F, F16},
-            {0x80, F17},
-            {0x81, F18},
-            {0x82, F19},
-            {0x83, F20},
-            {0x84, F21},
-            {0x85, F22},
-            {0x86, F23},
-            {0x87, F24},
-            {0x90, NumLock},
-            {0x91, ScrollLock},
-            {0x92, Fujitsu_Jisho},
-            {0x93, Fujitsu_Masshou},
-            {0x94, Fujitsu_Touroku},
-            {0x95, Fujitsu_Loya},
-            {0x96, Fujitsu_Roya},
-            {0x9A, LeftButtonAlt},
-            {0x9B, RightButtonAlt},
-            {0x9C, WheelLeft},
-            {0x9D, WheelRight},
-            {0x9E, WheelDown},
-            {0x9F, WheelUp},
-            {0xA0, LeftShift},
-            {0xA1, RightShift},
-            {0xA2, LeftControl},
-            {0xA3, RightControl},
-            {0xA4, LeftMenu},
-            {0xA5, RightMenu},
-            {0xA6, BrowserBack},
-            {0xA7, BrowserForward},
-            {0xA8, BrowserRefresh},
-            {0xA9, BrowserStop},
-            {0xAA, BrowserSearch},
-            {0xAB, BrowserFavorites},
-            {0xAC, BrowserHome},
-            {0xAD, VolumeMute},
-            {0xAE, VolumeDown},
-            {0xAF, VolumeUp},
-            {0xB0, MediaNextTrack},
-            {0xB1, MediaPrevTrack},
-            {0xB2, MediaStop},
-            {0xB3, MediaPlayPause},
-            {0xB4, LaunchMail},
-            {0xB5, LaunchMediaSelect},
-            {0xB6, LaunchApplication1},
-            {0xB7, LaunchApplication2},
-            {0xBA, OEM1},
-            {0xBB, OEMPlus},
-            {0xBC, OEMComma},
-            {0xBD, OEMMinus},
-            {0xBE, OEMPeriod},
-            {0xBF, OEM2},
-            {0xC0, OEM3},
-            {0xC1, International1},
-            {0xC2, BrazilianComma},
-            {0xDB, OEM4},
-            {0xDC, OEM5},
-            {0xDD, OEM6},
-            {0xDE, OEM7},
-            {0xDF, OEM8},
-            {0xE1, OEMAX},
-            {0xE2, OEM102},
-            {0xE3, ICOHelp},
-            {0xE4, ICO00},
-            {0xE5, ProcessKey},
-            {0xE6, ICOClear},
-            {0xE7, Packet},
-            {0xE9, OEMReset},
-            {0xEA, OEMJump},
-            {0xEB, OEMPA1},
-            {0xEC, OEMPA2},
-            {0xED, OEMPA3},
-            {0xEE, OEMWSCtrl},
-            {0xEF, OEMCUSel},
-            {0xF0, OEMATTN},
-            {0xF1, OEMFinish},
-            {0xF2, OEMCopy},
-            {0xF3, OEMAuto},
-            {0xF4, OEMENLW},
-            {0xF5, OEMBackTab},
-            {0xF6, ATTN},
-            {0xF7, CRSel},
-            {0xF8, EXSel},
-            {0xF9, EREOF},
-            {0xFA, Play},
-            {0xFB, Zoom},
-            {0xFC, Noname},
-            {0xFD, PA1},
-            {0xFE, OEMClear}
-        };
+            switch (value)
+            {
+                case 0x01: return LeftButton;
+                case 0x02: return RightButton;
+                case 0x03: return Cancel;
+                case 0x04: return MiddleButton;
+                case 0x05: return ExtraButton1;
+                case 0x06: return ExtraButton2;
+                case 0x08: return Back;
+                case 0x09: return Tab;
+                case 0x0C: return Clear;
+                case 0x0D: return Return;
+                case 0x10: return Shift;
+                case 0x11: return Control;
+                case 0x12: return Menu;
+                case 0x13: return Pause;
+                case 0x14: return CapsLock;
+                case 0x15: return Kana;
+                case 0x17: return Junja;
+                case 0x18: return Final;
+                case 0x19: return Hanja;
+                case 0x1B: return Escape;
+                case 0x1C: return Convert;
+                case 0x1D: return NonConvert;
+                case 0x1E: return Accept;
+                case 0x1F: return ModeChange;
+                case 0x20: return Space;
+                case 0x21: return Prior;
+                case 0x22: return Next;
+                case 0x23: return End;
+                case 0x24: return Home;
+                case 0x25: return Left;
+                case 0x26: return Up;
+                case 0x27: return Right;
+                case 0x28: return Down;
+                case 0x29: return Select;
+                case 0x2A: return Print;
+                case 0x2B: return Execute;
+                case 0x2C: return Snapshot;
+                case 0x2D: return Insert;
+                case 0x2E: return Delete;
+                case 0x2F: return Help;
+                case 0x30: return N0;
+                case 0x31: return N1;
+                case 0x32: return N2;
+                case 0x33: return N3;
+                case 0x34: return N4;
+                case 0x35: return N5;
+                case 0x36: return N6;
+                case 0x37: return N7;
+                case 0x38: return N8;
+                case 0x39: return N9;
+                case 0x41: return A;
+                case 0x42: return B;
+                case 0x43: return C;
+                case 0x44: return D;
+                case 0x45: return E;
+                case 0x46: return F;
+                case 0x47: return G;
+                case 0x48: return H;
+                case 0x49: return I;
+                case 0x4A: return J;
+                case 0x4B: return K;
+                case 0x4C: return L;
+                case 0x4D: return M;
+                case 0x4E: return N;
+                case 0x4F: return O;
+                case 0x50: return P;
+                case 0x51: return Q;
+                case 0x52: return R;
+                case 0x53: return S;
+                case 0x54: return T;
+                case 0x55: return U;
+                case 0x56: return V;
+                case 0x57: return W;
+                case 0x58: return X;
+                case 0x59: return Y;
+                case 0x5A: return Z;
+                case 0x5B: return LeftWindows;
+                case 0x5C: return RightWindows;
+                case 0x5D: return Application;
+                case 0x5F: return Sleep;
+                case 0x60: return Numpad0;
+                case 0x61: return Numpad1;
+                case 0x62: return Numpad2;
+                case 0x63: return Numpad3;
+                case 0x64: return Numpad4;
+                case 0x65: return Numpad5;
+                case 0x66: return Numpad6;
+                case 0x67: return Numpad7;
+                case 0x68: return Numpad8;
+                case 0x69: return Numpad9;
+                case 0x6A: return Multiply;
+                case 0x6B: return Add;
+                case 0x6C: return Separator;
+                case 0x6D: return Subtract;
+                case 0x6E: return Decimal;
+                case 0x6F: return Divide;
+                case 0x70: return F1;
+                case 0x71: return F2;
+                case 0x72: return F3;
+                case 0x73: return F4;
+                case 0x74: return F5;
+                case 0x75: return F6;
+                case 0x76: return F7;
+                case 0x77: return F8;
+                case 0x78: return F9;
+                case 0x79: return F10;
+                case 0x7A: return F11;
+                case 0x7B: return F12;
+                case 0x7C: return F13;
+                case 0x7D: return F14;
+                case 0x7E: return F15;
+                case 0x7F: return F16;
+                case 0x80: return F17;
+                case 0x81: return F18;
+                case 0x82: return F19;
+                case 0x83: return F20;
+                case 0x84: return F21;
+                case 0x85: return F22;
+                case 0x86: return F23;
+                case 0x87: return F24;
+                case 0x90: return NumLock;
+                case 0x91: return ScrollLock;
+                case 0x92: return Fujitsu_Jisho;
+                case 0x93: return Fujitsu_Masshou;
+                case 0x94: return Fujitsu_Touroku;
+                case 0x95: return Fujitsu_Loya;
+                case 0x96: return Fujitsu_Roya;
+                case 0x9A: return LeftButtonAlt;
+                case 0x9B: return RightButtonAlt;
+                case 0x9C: return WheelLeft;
+                case 0x9D: return WheelRight;
+                case 0x9E: return WheelDown;
+                case 0x9F: return WheelUp;
+                case 0xA0: return LeftShift;
+                case 0xA1: return RightShift;
+                case 0xA2: return LeftControl;
+                case 0xA3: return RightControl;
+                case 0xA4: return LeftMenu;
+                case 0xA5: return RightMenu;
+                case 0xA6: return BrowserBack;
+                case 0xA7: return BrowserForward;
+                case 0xA8: return BrowserRefresh;
+                case 0xA9: return BrowserStop;
+                case 0xAA: return BrowserSearch;
+                case 0xAB: return BrowserFavorites;
+                case 0xAC: return BrowserHome;
+                case 0xAD: return VolumeMute;
+                case 0xAE: return VolumeDown;
+                case 0xAF: return VolumeUp;
+                case 0xB0: return MediaNextTrack;
+                case 0xB1: return MediaPrevTrack;
+                case 0xB2: return MediaStop;
+                case 0xB3: return MediaPlayPause;
+                case 0xB4: return LaunchMail;
+                case 0xB5: return LaunchMediaSelect;
+                case 0xB6: return LaunchApplication1;
+                case 0xB7: return LaunchApplication2;
+                case 0xBA: return OEM1;
+                case 0xBB: return OEMPlus;
+                case 0xBC: return OEMComma;
+                case 0xBD: return OEMMinus;
+                case 0xBE: return OEMPeriod;
+                case 0xBF: return OEM2;
+                case 0xC0: return OEM3;
+                case 0xC1: return International1;
+                case 0xC2: return BrazilianComma;
+                case 0xDB: return OEM4;
+                case 0xDC: return OEM5;
+                case 0xDD: return OEM6;
+                case 0xDE: return OEM7;
+                case 0xDF: return OEM8;
+                case 0xE1: return OEMAX;
+                case 0xE2: return OEM102;
+                case 0xE3: return ICOHelp;
+                case 0xE4: return ICO00;
+                case 0xE5: return ProcessKey;
+                case 0xE6: return ICOClear;
+                case 0xE7: return Packet;
+                case 0xE9: return OEMReset;
+                case 0xEA: return OEMJump;
+                case 0xEB: return OEMPA1;
+                case 0xEC: return OEMPA2;
+                case 0xED: return OEMPA3;
+                case 0xEE: return OEMWSCtrl;
+                case 0xEF: return OEMCUSel;
+                case 0xF0: return OEMATTN;
+                case 0xF1: return OEMFinish;
+                case 0xF2: return OEMCopy;
+                case 0xF3: return OEMAuto;
+                case 0xF4: return OEMENLW;
+                case 0xF5: return OEMBackTab;
+                case 0xF6: return ATTN;
+                case 0xF7: return CRSel;
+                case 0xF8: return EXSel;
+                case 0xF9: return EREOF;
+                case 0xFA: return Play;
+                case 0xFB: return Zoom;
+                case 0xFC: return Noname;
+                case 0xFD: return PA1;
+                case 0xFE: return OEMClear;
+                default: return new RawKey(value, 0);
+            }
+        }
     }
 }

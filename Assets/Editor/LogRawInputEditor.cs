@@ -4,10 +4,12 @@ using UnityRawInput;
 [CustomEditor(typeof(LogRawInput))]
 public class LogRawInputEditor : Editor
 {
+    private string text;
     public override void OnInspectorGUI ()
     {
         base.OnInspectorGUI();
         EditorGUILayout.LabelField("Pressed Keys", GetKeys());
+        text = EditorGUILayout.TextField(RawKey.FromString(text).ToString(), text);
     }
 
     private void OnEnable ()

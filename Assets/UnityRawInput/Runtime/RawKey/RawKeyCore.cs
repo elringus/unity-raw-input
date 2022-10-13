@@ -25,28 +25,12 @@ namespace UnityRawInput
         private RawKey (byte vk, ushort sc) => rawValue = (uint)(vk + (sc << 8));
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private RawKey (byte vk) => this = MatchVirtualKey.TryGetValue(vk, out RawKey value) ? value : new RawKey(vk, 0);
-        /// <summary>
-        /// Create a RawKey from a byte (Virtual Key)
-        /// </summary>
-        public static RawKey FromVirtualKey (byte value) => new RawKey(value);
-
-        /// <summary>
-        /// Create a RawKey from a ushort (Scan Code)
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private RawKey (ushort sc) => this = MatchScanCode.TryGetValue(sc, out RawKey value) ? value : new RawKey(0, sc);
-        /// <summary>
-        /// Create a RawKey from a byte (Virtual Key)
-        /// </summary>
-        public static RawKey FromScanSode (ushort value) => new RawKey(value);
-
         public override bool Equals (object obj) => obj != null && GetType() == obj.GetType() && Equals((RawKey)obj);
         public bool Equals (RawKey other) => rawValue == other.rawValue;
         public override int GetHashCode () => rawValue.GetHashCode();
         public static bool operator == (RawKey k1, RawKey k2) => k1.rawValue == k2.rawValue;
         public static bool operator != (RawKey k1, RawKey k2) => !(k1 == k2);
+
 
         public override string ToString () => ToString(null, null);
         public string ToString (string format) => ToString(format, null);
@@ -78,16 +62,16 @@ namespace UnityRawInput
                     throw new FormatException($"The \"{format}\" format specifier is invalid.");
             }
         }
-
         /// <summary>
         /// Returns either "special key" format or virtual key byte, depending on if running low-level
         /// </summary>
         public string RawString () => RawInput.WorkInBackground ? $"vk{VK:X2}sc{SC:X3}" : $"0x{VK:X2}";
 
+
         /// <summary>
         /// Create a RawKey from standard hook (only handle virtual keys)
         /// </summary>
-        public static explicit operator RawKey (IntPtr i) => new RawKey((byte)i);
+        public static explicit operator RawKey (IntPtr i) => FromVirtualKey((byte)i);
 
         /// <summary>
         /// Create a RawKey from a low-level hook
