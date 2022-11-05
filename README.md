@@ -4,7 +4,7 @@ Wrapper over [Windows Raw Input API](https://msdn.microsoft.com/en-us/library/wi
 
 Will only work on Windows platform.
 
-Only keyboard and mouse buttons (right, left and middle) input is detected.
+Only keyboard and mouse input is detected.
 
 ## Installation
 
