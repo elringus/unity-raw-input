@@ -16,13 +16,20 @@ Enable `Run In Background` in project's player settings; if not enabled, expect 
 
 ![](https://i.gyazo.com/9737f66dafa9c705601521b82f40fc5a.png)
 
-Initialize the input service to start processing input messages; boolean argument stands for whether input messages should be handled when the application is not in focus:
+Initialize the service to start processing input messages:
 
 ```csharp
-RawInput.Start(true);
+RawInput.Start();
 ```
 
-Add listeners for the input events:
+Optionally, configure whether input messages should be handled when the application is not in focus and whether handled messages should be intercepted (both disabled by default):
+
+```csharp
+RawInput.WorkInBackground = true;
+RawInput.InterceptMessages = false;
+```
+
+Add listeners to handle input events:
 
 ```csharp
 RawInput.OnKeyUp += HandleKeyUp;
@@ -54,6 +61,6 @@ private void OnDisable ()
 }
 ```
 
-Find usage example in the project: https://github.com/Elringus/UnityRawInput/blob/master/Assets/Scripts/LogRawInput.cs.
+Find usage example in the project: https://github.com/Elringus/UnityRawInput/blob/master/Assets/Runtime/LogRawInput.cs.
 
 List of the raw keys with descriptions: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes.
