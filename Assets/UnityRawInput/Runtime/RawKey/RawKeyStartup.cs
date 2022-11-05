@@ -209,5 +209,20 @@ namespace UnityRawInput
             International4 = new RawKey(0x00, 0x079);
             International3 = new RawKey(0x00, 0x07D);
         }
+
+        /// <summary>
+        /// Ensures that any environment with UnityRawInput will have
+        /// <a cref="UnityEngine.Application.runInBackground"/> enabled
+        /// </summary>
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void EnsureBackground ()
+        {
+            if (UnityEngine.Application.runInBackground) return;
+            UnityEngine.Debug.LogWarning("Application isn't set to run in background! Not enabling this option will " +
+                "cause severe mouse slowdown if the window isn't in focus. Enabling behavior for this playsession, " +
+                "but you should explicitly enable this in \"Build Settings→Player Settings→Player→Resolution and " +
+                "Presentation→Run In Background\".");
+            UnityEngine.Application.runInBackground = true;
+        }
     }
 }
