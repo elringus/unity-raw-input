@@ -1,7 +1,8 @@
 ﻿namespace UnityRawInput
 {
-    public enum RawKey : ushort
+    public enum RawKey : uint
     {
+        // Simple (virtual key)
         LeftButton = 0x01,
         RightButton = 0x02,
         Cancel = 0x03,
@@ -133,6 +134,12 @@
         Fujitsu_Touroku = 0x94,
         Fujitsu_Loya = 0x95,
         Fujitsu_Roya = 0x96,
+        LeftButtonAlt = 0x9A,
+        RightButtonAlt = 0x9B,
+        WheelLeft = 0x9C,
+        WheelRight = 0x9D,
+        WheelDown = 0x9E,
+        WheelUp = 0x9F,
         LeftShift = 0xA0,
         RightShift = 0xA1,
         LeftControl = 0xA2,
@@ -164,6 +171,8 @@
         OEMPeriod = 0xBE,
         OEM2 = 0xBF,
         OEM3 = 0xC0,
+        International1 = 0xC1,
+        BrazilianComma = 0xC2,
         OEM4 = 0xDB,
         OEM5 = 0xDC,
         OEM6 = 0xDD,
@@ -178,6 +187,7 @@
         Packet = 0xE7,
         OEMReset = 0xE9,
         OEMJump = 0xEA,
+        International5 = 0xEB,
         OEMPA1 = 0xEB,
         OEMPA2 = 0xEC,
         OEMPA3 = 0xED,
@@ -197,7 +207,12 @@
         Zoom = 0xFB,
         Noname = 0xFC,
         PA1 = 0xFD,
-        OEMClear = 0xFE
+        OEMClear = 0xFE,
+
+        // Advanced (scan code)
+        International2 = 0x070 << 8,
+        International4 = 0x079 << 8,
+        International3 = 0x07D << 8
     }
 
     // https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes

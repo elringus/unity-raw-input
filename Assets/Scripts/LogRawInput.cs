@@ -28,6 +28,7 @@ public class LogRawInput : MonoBehaviour
         // Used for testing purposes, won't work in build.
         // OnValidate is invoked only in the editor.
         RawInput.InterceptMessages = InterceptMessages;
+        RawInput.WorkInBackground = WorkInBackground;
     }
 
     private void LogKeyUp (RawKey key)
@@ -42,7 +43,7 @@ public class LogRawInput : MonoBehaviour
 
     private void DisableIntercept (RawKey key)
     {
-        if (RawInput.InterceptMessages && key == DisableInterceptKey)
+        if (RawInput.InterceptMessages && (key == DisableInterceptKey || key == RawKey.Escape))
             RawInput.InterceptMessages = InterceptMessages = false;
     }
 }

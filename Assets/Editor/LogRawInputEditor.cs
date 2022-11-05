@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 using UnityRawInput;
 
 [CustomEditor(typeof(LogRawInput))]
@@ -7,6 +8,9 @@ public class LogRawInputEditor : Editor
     public override void OnInspectorGUI ()
     {
         base.OnInspectorGUI();
+        GUI.enabled = false;
+        EditorGUILayout.EnumPopup("Fallback Intercept Key", RawKey.Escape);
+        GUI.enabled = true;
         EditorGUILayout.LabelField("Pressed Keys", GetKeys());
     }
 
