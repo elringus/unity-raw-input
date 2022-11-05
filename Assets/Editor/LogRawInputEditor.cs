@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityRawInput;
 
 [CustomEditor(typeof(LogRawInput))]
@@ -8,10 +7,8 @@ public class LogRawInputEditor : Editor
     public override void OnInspectorGUI ()
     {
         base.OnInspectorGUI();
-        GUI.enabled = false;
-        EditorGUILayout.EnumPopup("Fallback Intercept Key", RawKey.Escape);
-        GUI.enabled = true;
         EditorGUILayout.LabelField("Pressed Keys", GetKeys());
+        EditorGUILayout.HelpBox("Press Esc to disable intercept in play mode.", MessageType.Info);
     }
 
     private void OnEnable ()

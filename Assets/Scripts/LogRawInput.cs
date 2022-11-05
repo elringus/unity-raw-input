@@ -5,7 +5,6 @@ public class LogRawInput : MonoBehaviour
 {
     public bool WorkInBackground;
     public bool InterceptMessages;
-    public RawKey DisableInterceptKey = RawKey.Escape;
 
     private void OnEnable ()
     {
@@ -43,7 +42,7 @@ public class LogRawInput : MonoBehaviour
 
     private void DisableIntercept (RawKey key)
     {
-        if (RawInput.InterceptMessages && (key == DisableInterceptKey || key == RawKey.Escape))
+        if (RawInput.InterceptMessages && key == RawKey.Escape)
             RawInput.InterceptMessages = InterceptMessages = false;
     }
 }
