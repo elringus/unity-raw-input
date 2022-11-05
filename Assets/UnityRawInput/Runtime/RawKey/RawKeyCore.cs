@@ -67,12 +67,6 @@ namespace UnityRawInput
         /// </summary>
         public string RawString () => $"vk{VK:X2}sc{SC:X3}";
 
-
-        /// <summary>
-        /// Create a RawKey from standard hook (only handle virtual keys)
-        /// </summary>
-        public static explicit operator RawKey (IntPtr i) => FromVirtualKey((byte)i);
-
         /// <summary>
         /// Create a RawKey from a low-level hook
         /// </summary>
