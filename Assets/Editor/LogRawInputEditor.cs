@@ -8,6 +8,7 @@ public class LogRawInputEditor : Editor
     {
         base.OnInspectorGUI();
         EditorGUILayout.LabelField("Pressed Keys", GetKeys());
+        EditorGUILayout.HelpBox("Press Esc to disable intercept in play mode.", MessageType.Info);
     }
 
     private void OnEnable ()

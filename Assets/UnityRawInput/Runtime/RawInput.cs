@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AOT;
+using UnityEngine;
 
 namespace UnityRawInput
 {
@@ -26,7 +27,7 @@ namespace UnityRawInput
         /// <summary>
         /// Whether input messages should be handled when the application is not in focus.
         /// </summary>
-        public static bool WorkInBackground { get; private set; }
+        public static bool WorkInBackground { get; set; }
         /// <summary>
         /// Whether handled input messages should not be propagated further.
         /// </summary>
@@ -42,12 +43,11 @@ namespace UnityRawInput
         /// <summary>
         /// Initializes the service and starts processing input messages.
         /// </summary>
-        /// <param name="workInBackground">Whether input messages should be handled when the application is not in focus.</param>
         /// <returns>Whether the service started successfully.</returns>
-        public static bool Start (bool workInBackground)
+        public static bool Start ()
         {
             if (IsRunning) return false;
-            WorkInBackground = workInBackground;
+            EnsureRunInBackgroundEnabled();
             SetHooks();
             return hooks.TrueForAll(h => h != IntPtr.Zero);
         }
@@ -71,8 +71,8 @@ namespace UnityRawInput
 
         private static void SetHooks ()
         {
-            hooks.Add(SetKeyboardHook());
-            hooks.Add(SetMouseHook());
+            hooks.Add(Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleKeyboardProc, IntPtr.Zero, 0));
+            hooks.Add(Win32API.SetWindowsHookEx(HookType.WH_MOUSE_LL, HandleMouseProc, IntPtr.Zero, 0));
         }
 
         private static void RemoveHooks ()
@@ -83,40 +83,14 @@ namespace UnityRawInput
             hooks.Clear();
         }
 
-        private static IntPtr SetKeyboardHook ()
-        {
-            if (WorkInBackground) return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleLowLevelKeyboardProc, IntPtr.Zero, 0);
-            return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD, HandleKeyboardProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
-        }
-
-        private static IntPtr SetMouseHook ()
-        {
-            if (WorkInBackground) return Win32API.SetWindowsHookEx(HookType.WH_MOUSE_LL, HandleMouseProc, IntPtr.Zero, 0);
-            return Win32API.SetWindowsHookEx(HookType.WH_MOUSE, HandleMouseProc, IntPtr.Zero, (int)Win32API.GetCurrentThreadId());
-        }
-
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
         {
-            if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
-
-            var isKeyDown = ((int)lParam & (1 << 31)) == 0;
-            var key = (RawKey)wParam;
-
-            if (isKeyDown) HandleKeyDown(key);
-            else HandleKeyUp(key);
-
-            return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
-        }
-
-        [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleLowLevelKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
-        {
-            if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            if (code < 0 || !CanHandleHook()) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
             var args = (KeyboardArgs)lParam;
             var state = (RawKeyState)wParam;
-            var key = (RawKey)args.Code;
+            var key = (RawKey)args;
 
             if (state == RawKeyState.KeyDown || state == RawKeyState.SysKeyDown) HandleKeyDown(key);
             else HandleKeyUp(key);
@@ -127,18 +101,28 @@ namespace UnityRawInput
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
         private static int HandleMouseProc (int code, IntPtr wParam, IntPtr lParam)
         {
-            if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            if (code < 0 || !CanHandleHook()) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+
+            var args = (MouseArgs)lParam;
             var state = (RawMouseState)wParam;
+
             if (state == RawMouseState.LeftButtonDown) HandleKeyDown(RawKey.LeftButton);
-            else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
-            else if (state == RawMouseState.RightButtonDown) HandleKeyDown(RawKey.RightButton);
-            else if (state == RawMouseState.ExtraButtonDown) HandleKeyDown(RawKey.ExtraButton1);
             else if (state == RawMouseState.LeftButtonUp) HandleKeyUp(RawKey.LeftButton);
-            else if (state == RawMouseState.MiddleButtonUp) HandleKeyUp(RawKey.MiddleButton);
+            else if (state == RawMouseState.RightButtonDown) HandleKeyDown(RawKey.RightButton);
             else if (state == RawMouseState.RightButtonUp) HandleKeyUp(RawKey.RightButton);
-            else if (state == RawMouseState.ExtraButtonUp) HandleKeyUp(RawKey.ExtraButton1);
-            else return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
+            else if (state == RawMouseState.MiddleButtonUp) HandleKeyUp(RawKey.MiddleButton);
+            else if (state == RawMouseState.ExtraButtonDown) HandleKeyDown(GetExtraButtonKey());
+            else if (state == RawMouseState.ExtraButtonUp) HandleKeyUp(GetExtraButtonKey());
+            else if (state == RawMouseState.MouseWheel) HandleKeyDownUp(GetWheelKey());
+            else if (state == RawMouseState.MouseWheelHorizontal) HandleKeyDownUp(GetWheelHorizontalKey());
+
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
+
+            short GetWheelDelta () => (short)(args.MouseData >> 16 & 0xFFFF);
+            RawKey GetWheelKey () => GetWheelDelta() < 0 ? RawKey.WheelDown : RawKey.WheelUp;
+            RawKey GetWheelHorizontalKey () => GetWheelDelta() < 0 ? RawKey.WheelLeft : RawKey.WheelRight;
+            RawKey GetExtraButtonKey () => (short)(args.MouseData >> 16 & 0xFFFF) == 1 ? RawKey.ExtraButton1 : RawKey.ExtraButton2;
         }
 
         private static void HandleKeyDown (RawKey key)
@@ -151,6 +135,28 @@ namespace UnityRawInput
         {
             pressedKeys.Remove(key);
             OnKeyUp?.Invoke(key);
+        }
+
+        private static void HandleKeyDownUp (RawKey key)
+        {
+            HandleKeyDown(key);
+            HandleKeyUp(key);
+        }
+
+        private static bool CanHandleHook ()
+        {
+            return WorkInBackground || Application.isFocused;
+        }
+
+        // https://github.com/Elringus/UnityRawInput/issues/19#issuecomment-1227462101
+        private static void EnsureRunInBackgroundEnabled ()
+        {
+            if (Application.runInBackground) return;
+            Debug.LogWarning("Application isn't set to run in background! Not enabling this option will " +
+                             "cause severe mouse slowdown if the window isn't in focus. Enabling behavior for this play session, " +
+                             "but you should explicitly enable this in \"Build Settings→Player Settings→Player→Resolution and " +
+                             "Presentation→Run In Background\".");
+            Application.runInBackground = true;
         }
     }
 }
