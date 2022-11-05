@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace UnityRawInput
 {
@@ -13,31 +14,23 @@ namespace UnityRawInput
         public uint Time;
         public UIntPtr ExtraInfo;
 
+        public uint TrueScanCode => Flags.HasFlag(KeyboardFlags.Extended) ? ScanCode + 0x100 : ScanCode;
+        public uint Advanced => TrueScanCode << 8;
+        public uint Hybrid => Code + Advanced;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator KeyboardArgs (IntPtr ptr)
             => Marshal.PtrToStructure<KeyboardArgs>(ptr);
 
-        public uint TrueScanCode => Flags.HasFlag(KeyboardFlags.Extended) ? ScanCode + 0x100 : ScanCode;
-
-        public uint Advanced => TrueScanCode << 8;
-        public uint Hyrbid => Code + Advanced;
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator RawKey (KeyboardArgs args)
         {
-            // First check just the virtual key
             if (Enum.IsDefined(typeof(RawKey), args.Code))
                 return (RawKey)args.Code;
-
-            // If that fails, do advanced check against the scan code
             if (Enum.IsDefined(typeof(RawKey), args.Advanced))
-                return (RawKey)(args.Advanced);
-
-            // If it fails again, do one final check as a hyrbid of both the code and scancode
-            if (Enum.IsDefined(typeof(RawKey), args.Hyrbid))
-                return (RawKey)(args.Hyrbid);
-
-            // If still nothing, just return the simple value
+                return (RawKey)args.Advanced;
+            if (Enum.IsDefined(typeof(RawKey), args.Hybrid))
+                return (RawKey)args.Hybrid;
             return (RawKey)args.Code;
         }
     }
@@ -55,7 +48,7 @@ namespace UnityRawInput
     [StructLayout(LayoutKind.Sequential)]
     public struct MouseArgs
     {
-        public UnityEngine.Vector2Int Point;
+        public Vector2Int Point;
         public uint MouseData;
         public MouseFlags Flags;
         public uint Time;

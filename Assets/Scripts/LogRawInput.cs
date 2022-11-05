@@ -8,15 +8,20 @@ public class LogRawInput : MonoBehaviour
 
     private void OnEnable ()
     {
-        RawInput.Start(WorkInBackground);
+        RawInput.WorkInBackground = WorkInBackground;
+        RawInput.InterceptMessages = InterceptMessages;
+
         RawInput.OnKeyUp += LogKeyUp;
         RawInput.OnKeyDown += LogKeyDown;
         RawInput.OnKeyDown += DisableIntercept;
+
+        RawInput.Start();
     }
 
     private void OnDisable ()
     {
         RawInput.Stop();
+
         RawInput.OnKeyUp -= LogKeyUp;
         RawInput.OnKeyDown -= LogKeyDown;
         RawInput.OnKeyDown -= DisableIntercept;
@@ -24,8 +29,8 @@ public class LogRawInput : MonoBehaviour
 
     private void OnValidate ()
     {
-        // Used for testing purposes, won't work in build.
-        // OnValidate is invoked only in the editor.
+        // Apply options when toggles are clicked in editor.
+        // OnValidate is invoked only in the editor (won't affect build).
         RawInput.InterceptMessages = InterceptMessages;
         RawInput.WorkInBackground = WorkInBackground;
     }

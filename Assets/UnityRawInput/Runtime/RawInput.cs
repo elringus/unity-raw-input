@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AOT;
+using UnityEngine;
 
 namespace UnityRawInput
 {
@@ -42,12 +43,11 @@ namespace UnityRawInput
         /// <summary>
         /// Initializes the service and starts processing input messages.
         /// </summary>
-        /// <param name="workInBackground">Whether input messages should be handled when the application is not in focus.</param>
         /// <returns>Whether the service started successfully.</returns>
-        public static bool Start (bool workInBackground)
+        public static bool Start ()
         {
             if (IsRunning) return false;
-            WorkInBackground = workInBackground;
+            EnsureRunInBackgroundEnabled();
             SetHooks();
             return hooks.TrueForAll(h => h != IntPtr.Zero);
         }
@@ -61,23 +61,6 @@ namespace UnityRawInput
             pressedKeys.Clear();
         }
 
-
-        /// <summary>
-        /// Whether hooks are allowed to handle incoming inputs.
-        /// </summary>
-        public static bool CanHandleHook ()
-        {
-            if (WorkInBackground) return true;
-#if UNITY_EDITOR
-            // Restores the old functionality where focus on the editor period qualifies for
-            // "on focus". Otherwise it would only react if the game view was focused. If this
-            // behavior is desired, replace the below with the "isFocused" check
-            return UnityEditorInternal.InternalEditorUtility.isApplicationActive;
-#else
-            return UnityEngine.Application.isFocused;
-#endif
-        }
-
         /// <summary>
         /// Checks whether provided key is currently pressed.
         /// </summary>
@@ -88,8 +71,8 @@ namespace UnityRawInput
 
         private static void SetHooks ()
         {
-            hooks.Add(SetKeyboardHook());
-            hooks.Add(SetMouseHook());
+            hooks.Add(Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleKeyboardProc, IntPtr.Zero, 0));
+            hooks.Add(Win32API.SetWindowsHookEx(HookType.WH_MOUSE_LL, HandleMouseProc, IntPtr.Zero, 0));
         }
 
         private static void RemoveHooks ()
@@ -100,20 +83,10 @@ namespace UnityRawInput
             hooks.Clear();
         }
 
-        private static IntPtr SetKeyboardHook ()
-        {
-            return Win32API.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, HandleLowLevelKeyboardProc, IntPtr.Zero, 0);
-        }
-
-        private static IntPtr SetMouseHook ()
-        {
-            return Win32API.SetWindowsHookEx(HookType.WH_MOUSE_LL, HandleLowLevelMouseProc, IntPtr.Zero, 0);
-        }
-
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleLowLevelKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleKeyboardProc (int code, IntPtr wParam, IntPtr lParam)
         {
-            if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            if (code < 0 || !CanHandleHook()) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
             var args = (KeyboardArgs)lParam;
             var state = (RawKeyState)wParam;
@@ -126,40 +99,30 @@ namespace UnityRawInput
         }
 
         [MonoPInvokeCallback(typeof(Win32API.HookProc))]
-        private static int HandleLowLevelMouseProc (int code, IntPtr wParam, IntPtr lParam)
+        private static int HandleMouseProc (int code, IntPtr wParam, IntPtr lParam)
         {
-            if (!CanHandleHook()) return 0;
-
-            if (code < 0) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+            if (code < 0 || !CanHandleHook()) return Win32API.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
 
             var args = (MouseArgs)lParam;
             var state = (RawMouseState)wParam;
-            switch (state)
-            {
-                case RawMouseState.LeftButtonDown: HandleKeyDown(RawKey.LeftButton); break;
-                case RawMouseState.LeftButtonUp: HandleKeyUp(RawKey.LeftButton); break;
-                case RawMouseState.RightButtonDown: HandleKeyDown(RawKey.RightButton); break;
-                case RawMouseState.RightButtonUp: HandleKeyUp(RawKey.RightButton); break;
-                case RawMouseState.MiddleButtonDown: HandleKeyDown(RawKey.MiddleButton); break;
-                case RawMouseState.MiddleButtonUp: HandleKeyUp(RawKey.MiddleButton); break;
-                case RawMouseState.ExtraButtonDown:
-                    HandleKeyDown((short)(args.MouseData >> 16 & 0xFFFF) == 1
-                    ? RawKey.ExtraButton1 : RawKey.ExtraButton2); break;
-                case RawMouseState.ExtraButtonUp:
-                    HandleKeyUp((short)(args.MouseData >> 16 & 0xFFFF) == 1
-                    ? RawKey.ExtraButton1 : RawKey.ExtraButton2); break;
-                case RawMouseState.MouseWheel:
-                case RawMouseState.MouseWheelHorizontal:
-                    short delta = (short)(args.MouseData >> 16 & 0xFFFF);
-                    HandleKeyDown(state == RawMouseState.MouseWheel ?
-                        delta < 0 ? RawKey.WheelDown : RawKey.WheelUp :
-                        delta < 0 ? RawKey.WheelLeft : RawKey.WheelRight);
-                    HandleKeyUp(state == RawMouseState.MouseWheel ?
-                        delta < 0 ? RawKey.WheelDown : RawKey.WheelUp :
-                        delta < 0 ? RawKey.WheelLeft : RawKey.WheelRight); break;
-            }
+
+            if (state == RawMouseState.LeftButtonDown) HandleKeyDown(RawKey.LeftButton);
+            else if (state == RawMouseState.LeftButtonUp) HandleKeyUp(RawKey.LeftButton);
+            else if (state == RawMouseState.RightButtonDown) HandleKeyDown(RawKey.RightButton);
+            else if (state == RawMouseState.RightButtonUp) HandleKeyUp(RawKey.RightButton);
+            else if (state == RawMouseState.MiddleButtonDown) HandleKeyDown(RawKey.MiddleButton);
+            else if (state == RawMouseState.MiddleButtonUp) HandleKeyUp(RawKey.MiddleButton);
+            else if (state == RawMouseState.ExtraButtonDown) HandleKeyDown(GetExtraButtonKey());
+            else if (state == RawMouseState.ExtraButtonUp) HandleKeyUp(GetExtraButtonKey());
+            else if (state == RawMouseState.MouseWheel) HandleKeyDownUp(GetWheelKey());
+            else if (state == RawMouseState.MouseWheelHorizontal) HandleKeyDownUp(GetWheelHorizontalKey());
 
             return InterceptMessages ? 1 : Win32API.CallNextHookEx(IntPtr.Zero, 0, wParam, lParam);
+
+            short GetWheelDelta () => (short)(args.MouseData >> 16 & 0xFFFF);
+            RawKey GetWheelKey () => GetWheelDelta() < 0 ? RawKey.WheelDown : RawKey.WheelUp;
+            RawKey GetWheelHorizontalKey () => GetWheelDelta() < 0 ? RawKey.WheelLeft : RawKey.WheelRight;
+            RawKey GetExtraButtonKey () => (short)(args.MouseData >> 16 & 0xFFFF) == 1 ? RawKey.ExtraButton1 : RawKey.ExtraButton2;
         }
 
         private static void HandleKeyDown (RawKey key)
@@ -174,19 +137,26 @@ namespace UnityRawInput
             OnKeyUp?.Invoke(key);
         }
 
-        /// <summary>
-        /// Ensures that any environment with UnityRawInput will have
-        /// <a cref="UnityEngine.Application.runInBackground"/> enabled
-        /// </summary>
-        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void EnsureBackground ()
+        private static void HandleKeyDownUp (RawKey key)
         {
-            if (UnityEngine.Application.runInBackground) return;
-            UnityEngine.Debug.LogWarning("Application isn't set to run in background! Not enabling this option will " +
-                "cause severe mouse slowdown if the window isn't in focus. Enabling behavior for this playsession, " +
-                "but you should explicitly enable this in \"Build Settings→Player Settings→Player→Resolution and " +
-                "Presentation→Run In Background\".");
-            UnityEngine.Application.runInBackground = true;
+            HandleKeyDown(key);
+            HandleKeyUp(key);
+        }
+
+        private static bool CanHandleHook ()
+        {
+            return WorkInBackground || Application.isFocused;
+        }
+
+        // https://github.com/Elringus/UnityRawInput/issues/19#issuecomment-1227462101
+        private static void EnsureRunInBackgroundEnabled ()
+        {
+            if (Application.runInBackground) return;
+            Debug.LogWarning("Application isn't set to run in background! Not enabling this option will " +
+                             "cause severe mouse slowdown if the window isn't in focus. Enabling behavior for this play session, " +
+                             "but you should explicitly enable this in \"Build Settings→Player Settings→Player→Resolution and " +
+                             "Presentation→Run In Background\".");
+            Application.runInBackground = true;
         }
     }
 }
