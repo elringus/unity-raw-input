@@ -8,11 +8,11 @@ Only keyboard and mouse input is detected.
 
 ## Installation
 
-Download and import the package: [UnityRawInput.unitypackage](https://github.com/Elringus/UnityRawInput/raw/master/UnityRawInput.unitypackage).
+Download and import the package: [UnityRawInput.unitypackage](https://github.com/elringus/unity-raw-input/raw/main/UnityRawInput.unitypackage).
 
 ## Usage
 
-Enable `Run In Background` in project's player settings; if not enabled, expect severe mouse slowdown when the application is not in focus https://github.com/Elringus/UnityRawInput/issues/19#issuecomment-1227462101.
+Enable `Run In Background` in project's player settings; if not enabled, expect severe mouse slowdown when the application is not in focus https://github.com/elringus/unity-raw-input/issues/19#issuecomment-1227462101.
 
 ![](https://i.gyazo.com/9737f66dafa9c705601521b82f40fc5a.png)
 
@@ -61,6 +61,6 @@ private void OnDisable ()
 }
 ```
 
-Find usage example in the project: https://github.com/Elringus/UnityRawInput/blob/master/Assets/Runtime/LogRawInput.cs.
+Find usage example in the project: https://github.com/elringus/unity-raw-input/blob/main/Assets/Runtime/LogRawInput.cs.
 
 List of the raw keys with descriptions: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes.
