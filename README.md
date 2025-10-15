@@ -64,3 +64,10 @@ private void OnDisable ()
 Find usage example in the project: https://github.com/elringus/unity-raw-input/blob/main/Assets/Runtime/LogRawInput.cs.
 
 List of the raw keys with descriptions: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes.
+
+---
+
+<a href="https://naninovel.com">
+  <p align="center">The plugin is used in <strong>Naninovel: Visual Novel, Dialogue & Cutscene Storytelling Engine</strong>. Check it out!</p>
+  <p align="center"><img alt="naninovel banner" src="https://raw.githubusercontent.com/elringus/cdn/main/naninovel-banner-wide.png"></p>
+</a>
